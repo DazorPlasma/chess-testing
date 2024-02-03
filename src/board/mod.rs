@@ -1,10 +1,11 @@
-#![allow(unused)]
+#![deny(unsafe_code)]
+
 mod piece;
 
 use bevy::{ecs::system::Resource, utils::HashMap};
 use piece::*;
 pub use piece::{Color, Kind, Position};
-use std::sync::{Arc, RwLock, Weak};
+use std::sync::{Arc, RwLock};
 
 #[derive(Debug, Resource)]
 pub struct Board {
@@ -40,6 +41,7 @@ fn add_white_pieces(board: Arc<RwLock<Board>>) {
     pieces.push(queen);
     pieces.push(king);
 }
+
 fn add_black_pieces(board: Arc<RwLock<Board>>) {
     use Position as Pos;
     let pieces = &mut board.write().unwrap().pieces;
@@ -68,6 +70,7 @@ fn add_black_pieces(board: Arc<RwLock<Board>>) {
     pieces.push(queen);
     pieces.push(king);
 }
+
 fn add_default_pieces(board: &Arc<RwLock<Board>>) {
     add_white_pieces(Arc::clone(board));
     add_black_pieces(Arc::clone(board));
@@ -81,7 +84,7 @@ impl Board {
         }))
     }
     pub fn new() -> Arc<RwLock<Self>> {
-        let mut board = Board::new_empty();
+        let board = Board::new_empty();
         add_default_pieces(&board);
         let mut board_lock = board.write().unwrap();
         let piece_positions: Vec<Position> =

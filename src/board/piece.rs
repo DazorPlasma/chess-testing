@@ -1,4 +1,4 @@
-#![allow(unused)]
+#![deny(unsafe_code)]
 
 use std::sync::{Arc, RwLock, Weak};
 
@@ -12,6 +12,15 @@ pub enum Color {
     Black,
 }
 
+impl std::fmt::Display for Color {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::White => write!(f, "white"),
+            Self::Black => write!(f, "black"),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
 pub enum Kind {
     King,
@@ -20,6 +29,20 @@ pub enum Kind {
     Bishop,
     Rook,
     Pawn,
+}
+
+impl std::fmt::Display for Kind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let txt = match self {
+            Self::King => "king",
+            Self::Queen => "queen",
+            Self::Bishop => "bishop",
+            Self::Knight => "knight",
+            Self::Pawn => "pawn",
+            Self::Rook => "rook",
+        };
+        write!(f, "{txt}")
+    }
 }
 
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
@@ -33,6 +56,7 @@ pub struct Piece {
     color: Color,
     kind: Kind,
     position: Position,
+    #[allow(unused)]
     board: Weak<RwLock<Board>>,
 }
 
@@ -59,7 +83,8 @@ impl Piece {
     pub fn get_position(&self) -> Position {
         self.position
     }
-    fn get_blind_moves(&self) -> Vec<Position> {
+    #[allow(unused)]
+    fn get_moves(&self) -> Vec<Position> {
         let mut moves = Vec::with_capacity(32);
         let current_position = self.position;
         match self.kind {
@@ -86,11 +111,6 @@ impl Piece {
         }
 
         moves.into_iter().filter(|&p| p.is_valid()).collect()
-    }
-
-    pub fn get_moves(&self) -> Vec<Position> {
-        // todo!();
-        self.get_blind_moves()
     }
 }
 
